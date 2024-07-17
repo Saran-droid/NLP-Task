@@ -7,6 +7,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 
 # Load your model (adjust as per your model loading)
 model = joblib.load('sentiment_model.pkl')
+vectorizer = TfidfVectorizer()
 
 # Example preprocessing functions (adjust based on your implementation)
 nlp = spacy.load('en_core_web_sm')  # Example, adjust based on your setup
@@ -21,14 +22,16 @@ def preprocess_text(text):
     doc = nlp(text)  # Tokenize text using SpaCy
     lemmatized_tokens = [token.lemma_ for token in doc]  # Lemmatize tokens
     cleaned_tokens = [token for token in lemmatized_tokens if token.isalpha()]  # Remove non-alphabetic tokens
-    doc_no_stopwords = [token.text for token in doc if not token.is_stop]  # Remove stopwords
-    return ' '.join(doc_no_stopwords)
+    doc_no_stopwords = [remove_stopwords(tokens) for tokens in cleaned_tokens]  # Remove stopwords
+    cleaned_sentence = [' '.join(tokens) for tokens in doc_no_stopwords]
+    return vectorizer.fit_transform(cleaned_sentence)
 
 def predict_sentiment(text):
     # Example function to predict sentiment (adjust as per your model and requirements)
     preprocessed_text = preprocess_text(text)
-    # Assuming model.predict() gives sentiment score or class
-    sentiment_score = model.predict(preprocessed_text)
+    print(preprocessed_text)
+    sentiment_score = model.predict([preprocessed_text])
+    # Wrap preprocessed_text in a list
     return sentiment_score
 
 
