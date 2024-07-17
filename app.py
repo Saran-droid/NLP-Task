@@ -3,11 +3,11 @@ import joblib  # Example, adjust based on your model loading
 import spacy  # Example, adjust based on your tokenization and lemmatization setup
 import re
 import joblib
-from sklearn.feature_extraction.text import TfidfVectorizer
+
 
 # Load your model (adjust as per your model loading)
 model = joblib.load('sentiment_model.pkl')
-vectorizer = TfidfVectorizer()
+vectorizer = joblib.load('tfidf_vectorizer.pkl')
 
 # Example preprocessing functions (adjust based on your implementation)
 nlp = spacy.load('en_core_web_sm')  # Example, adjust based on your setup
@@ -22,16 +22,16 @@ def preprocess_text(text):
     doc = nlp(text)  # Tokenize text using SpaCy
     lemmatized_tokens = [token.lemma_ for token in doc]  # Lemmatize tokens
     cleaned_tokens = [token for token in lemmatized_tokens if token.isalpha()]  # Remove non-alphabetic tokens
-    doc_no_stopwords = [remove_stopwords(tokens) for tokens in cleaned_tokens]  # Remove stopwords
-    cleaned_sentence = [' '.join(tokens) for tokens in doc_no_stopwords]
-    return vectorizer.fit_transform(cleaned_sentence)
+    doc_no_stopwords = [token for token in cleaned_tokens if token not in stop_words]  # Remove stopwords
+    return ' '.join(doc_no_stopwords)
 
 def predict_sentiment(text):
-    # Example function to predict sentiment (adjust as per your model and requirements)
     preprocessed_text = preprocess_text(text)
-    print(preprocessed_text)
-    sentiment_score = model.predict([preprocessed_text])
-    # Wrap preprocessed_text in a list
+    if not preprocessed_text.strip():  # Check if the preprocessed text is empty
+        return "Error: Review text is empty after preprocessing."
+    # Transform the preprocessed text using the pre-fitted vectorizer
+    transformed_text = vectorizer.transform([preprocessed_text])
+    sentiment_score = model.predict(transformed_text)  # Use transformed_text for prediction
     return sentiment_score
 
 
