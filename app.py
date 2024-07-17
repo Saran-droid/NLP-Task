@@ -1,0 +1,53 @@
+import streamlit as st
+import joblib  # Example, adjust based on your model loading
+import spacy  # Example, adjust based on your tokenization and lemmatization setup
+import re
+import joblib
+from sklearn.feature_extraction.text import TfidfVectorizer
+
+# Load your model (adjust as per your model loading)
+model = joblib.load('sentiment_model.pkl')
+
+# Example preprocessing functions (adjust based on your implementation)
+nlp = spacy.load('en_core_web_sm')  # Example, adjust based on your setup
+
+stop_words = nlp.Defaults.stop_words
+def remove_stopwords(tokens):
+    return [word for word in tokens if word.lower() not in stop_words]
+def preprocess_text(text):
+    text = re.sub(r'<.*?>', '', text)
+    text = re.sub(r'^a-zA-Z\s', '', text)
+    text = text.lower()
+    doc = nlp(text)
+    lemmatized_tokens = [token.lemma_ for token in doc]
+    cleaned_tokens = [re.sub(r'\W+', '', token) for token in lemmatized_tokens if not token.isdigit()]
+    doc_no_stopwords = [remove_stopwords(tokens) for tokens in cleaned_tokens]
+    return ' '.join(doc_no_stopwords)  # Return preprocessed text as string
+
+
+def predict_sentiment(text):
+    # Example function to predict sentiment (adjust as per your model and requirements)
+    preprocessed_text = preprocess_text(text)
+    # Assuming model.predict() gives sentiment score or class
+    sentiment_score = model.predict(preprocessed_text)
+    return sentiment_score
+
+
+# Streamlit app code
+def main():
+    st.title('Customer Review Sentiment Analysis')
+
+    # Text input for user to enter a review
+    review_text = st.text_area('Enter your review here:')
+
+    if st.button('Analyze'):
+        # Perform sentiment analysis when the button is clicked
+        if review_text:
+            sentiment = predict_sentiment(review_text)
+            st.write(f'Sentiment Analysis Result: {sentiment}')
+        else:
+            st.warning('Please enter a review to analyze.')
+
+
+if __name__ == '__main__':
+    main()
