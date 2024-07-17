@@ -15,15 +15,14 @@ stop_words = nlp.Defaults.stop_words
 def remove_stopwords(tokens):
     return [word for word in tokens if word.lower() not in stop_words]
 def preprocess_text(text):
-    text = re.sub(r'<.*?>', '', text)
-    text = re.sub(r'^a-zA-Z\s', '', text)
-    text = text.lower()
-    doc = nlp(text)
-    lemmatized_tokens = [token.lemma_ for token in doc]
-    cleaned_tokens = [re.sub(r'\W+', '', token) for token in lemmatized_tokens if not token.isdigit()]
-    doc_no_stopwords = [remove_stopwords(tokens) for tokens in cleaned_tokens]
-    return ' '.join(doc_no_stopwords)  # Return preprocessed text as string
-
+    text = re.sub(r'<.*?>', '', text)  # Remove HTML tags (if any)
+    text = re.sub(r'[^a-zA-Z\s]', '', text)  # Remove non-alphabetic characters
+    text = text.lower()  # Convert text to lowercase
+    doc = nlp(text)  # Tokenize text using SpaCy
+    lemmatized_tokens = [token.lemma_ for token in doc]  # Lemmatize tokens
+    cleaned_tokens = [token for token in lemmatized_tokens if token.isalpha()]  # Remove non-alphabetic tokens
+    doc_no_stopwords = [token.text for token in doc if not token.is_stop]  # Remove stopwords
+    return ' '.join(doc_no_stopwords)
 
 def predict_sentiment(text):
     # Example function to predict sentiment (adjust as per your model and requirements)
