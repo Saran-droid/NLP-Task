@@ -44,3 +44,4 @@ This project involves the development of a machine learning model for sentiment 
 ### Conclusion
 
 This project successfully demonstrates the application of machine learning for sentiment analysis on customer reviews. By leveraging powerful NLP techniques and machine learning algorithms, we developed a model that accurately predicts the sentiment of reviews. The deployment of this model using Streamlit makes it accessible and easy to use, providing real-time sentiment analysis for customer reviews. This project showcases the potential of sentiment analysis in understanding customer opinions and improving product and service offerings based on feedback.
+![image](https://github.com/user-attachments/assets/b9196a21-ac80-439b-a82a-ed197ca304fe)
